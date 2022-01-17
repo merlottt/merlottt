@@ -57,3 +57,14 @@ function ssh-copy-Key($user_host) {
 cat ~/.ssh/id_rsa.pub | ssh $user_host "umask 077; test -d .ssh || mkdir .ssh ; cat >> .ssh/authorized_keys || exit 1"
 
 }
+
+if (-not(Test-Path $ENV:userprofile\env\)) {
+    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\
+}
+else {
+    git -C $ENV:userprofile\env\ pull
+}
+if (Test-Path $ENV:userprofile\env\profile.ps1)
+{
+    Copy-Item "$ENV:userprofile\env\profile.ps1" -Destination "$PROFILE.CurrentUserAllHosts"
+}
