@@ -4,8 +4,7 @@ function edit ($file) { & "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" $fi
 function explore { "explorer.exe `"$(pwd)`"" | iex }
 function download ($url, $file) {(new-object Net.WebClient).DownloadFile($url, $file)}
 function wget ($url) {(new-object Net.WebClient).DownloadString("$url")}
-function admin
-{
+function admin{
     if ($args.Count -gt 0)    {  $argList = "& '" + $args + "'";       Start-Process "$psHome\powershell.exe" -Verb runAs -ArgumentList $argList    }
     else    {       Start-Process "$psHome\powershell.exe" -Verb runAs    }
 }
