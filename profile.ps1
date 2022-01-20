@@ -142,4 +142,4 @@ Write-Host -foregroundcolor Green -BackgroundColor DarkGray Last modify config f
 
 if (-not(Test-Path $ENV:userprofile\env\)) {    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\ }
 else {    git -C $ENV:userprofile\env\ pull }
-if (Test-Path $ENV:userprofile\env\profile.ps1) { Copy-Item "$ENV:userprofile\env\profile.ps1" -Destination "$PROFILE.CurrentUserAllHosts" }
+if (Test-Path $ENV:userprofile\env\profile.ps1) { Copy-Item $ENV:userprofile\env\profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force }
