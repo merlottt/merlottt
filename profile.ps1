@@ -8,6 +8,87 @@ function admin{
     if ($args.Count -gt 0)    {  $argList = "& '" + $args + "'";       Start-Process "$psHome\powershell.exe" -Verb runAs -ArgumentList $argList    }
     else    {       Start-Process "$psHome\powershell.exe" -Verb runAs    }
 }
+function grep {
+  $input | out-string -stream | select-string $args
+}
+Function New-RandomPassword{
+    Param(
+        [ValidateRange(8, 32)]
+        [int] $Length = 16
+    )   
+    $AsciiCharsList = @()   
+    foreach ($a in (33..126)){ $AsciiCharsList += , [char][byte]$a }
+    $RegEx = "(?=^.{8,32}$)((?=.*\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*"
+    do {
+        $Password = ""
+        $loops = 1..$Length
+        Foreach ($loop in $loops) { $Password += $AsciiCharsList | Get-Random }
+    }
+    until ($Password -match $RegEx )   
+    return $Password   
+}
+function removeJpegPhotouserAD($userlogin) { set-aduser $userlogin -clear jpegPhoto }
+
+function fuip_ad0($username) {Get-aduser -filter "Name -like '*$username*'" -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title
+} 
+
+function rup_ad0($username) {
+    New-RandomPassword
+    $NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset
+} 
+function fuip_ad1($username) {
+    while($env:ad1pass -eq $null)
+    {
+        $inputad1pass = Read-Host "Enter a Password from AD1 operator Account" -AsSecureString
+        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($inputad1pass)
+        $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    }
+    $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
+    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad1.user", $secpasswd)
+    Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title -Server "$config.ad1.host" -Credential $ad1creds
+} 
+
+function rup_ad1($username) {
+    while($env:ad1pass -eq $null)
+    {
+        $inputad1pass = Read-Host "Enter a Password from AD1 operator Account" -AsSecureString
+        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($inputad1pass)
+        $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    }
+    $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
+    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad1.user", $secpasswd)
+    New-RandomPassword
+    $NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Server "$config.ad1.host" -Credential $ad1creds
+} 
+
+function umsGUID($username) {
+    $msGorig = (Get-ADUser -Identity $username -properties:'ms-DS-ConsistencyGUID').'ms-DS-ConsistencyGUID'
+    Write-host "Original ms-DS-ConsistencyGUID:" $msGorig -foreground green
+    $msConv = [guid]$msGorig
+    Write-host "Converted ms-DS-ConsistencyGUID:" $msConv -foreground red
+    $Gorig = (Get-ADUser -Identity $username -properties:'ObjectGUID').'ObjectGUID'
+    Write-host "Original objectGUID:" $Gorig -foreground red
+    $Gconv=$Gorig.ToByteArray()
+    Write-host "Converted objectGUID:" $Gconv -foreground green
+}
+
+Function sync_ad0_ad1_userinfo($username) {
+    $cur_user= get-aduser $username -properties:Title,manager,division,description,Department,absrcdepartment
+    $manager_cur_user=(get-aduser $cur_user.Manager).samaccountname
+    $jobtitle_cur_user=$cur_user.Title
+    while($env:ad1pass -eq $null)
+    {
+        $inputad1pass = Read-Host "Enter a Password from AD1 operator Account" -AsSecureString
+        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($inputad1pass)
+        $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    }
+    $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
+    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad0.user", $secpasswd)
+    set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title $jobtitle_cur_user -Description $jobtitle_cur_user -Server "$config.ad1.host" -Credential $ad1creds;
+    Write-Host set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title `"$jobtitle_cur_user`" -Description `"$jobtitle_cur_user`"
+} 
 
 Set-Alias -Name su -Value admin
 Set-Alias -Name sudo -Value admin
@@ -50,13 +131,15 @@ cat ~/.ssh/id_rsa.pub | ssh $user_host "umask 077; test -d .ssh || mkdir .ssh ; 
 
 }
 
-if (-not(Test-Path $ENV:userprofile\env\)) {
-    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\
-}
-else {
-    git -C $ENV:userprofile\env\ pull
-}
-if (Test-Path $ENV:userprofile\env\profile.ps1)
-{
-    Copy-Item "$ENV:userprofile\env\profile.ps1" -Destination "$PROFILE.CurrentUserAllHosts"
-}
+#BEGIN
+$path_to_config="$ENV:userprofile\ps_profile.config"
+$config=Import-PowerShellDataFile $path_to_config
+clear
+Write-Host -foregroundcolor Red Be careful, the script is in the public git. 
+Write-Host -foregroundcolor Green Store confidential information in a config file 
+Write-Host -foregroundcolor Green Path to current config file:  $path_to_config
+Write-Host -foregroundcolor Green -BackgroundColor DarkGray Last modify config file: (Get-Item $path_to_config).LastWriteTime
+
+if (-not(Test-Path $ENV:userprofile\env\)) {    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\ }
+else {    git -C $ENV:userprofile\env\ pull }
+if (Test-Path $ENV:userprofile\env\profile.ps1) { Copy-Item "$ENV:userprofile\env\profile.ps1" -Destination "$PROFILE.CurrentUserAllHosts" }
