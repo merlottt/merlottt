@@ -112,6 +112,7 @@ function initEnv {
     SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
     choco install -y python3
     choco install -y windirstat
+
     python -m pip install --pgrade pip
     # Install TightVNC without Password Authentication (defer to Console AD Auths)
     #choco install tightvnc -y --installArguments 'SET_USEVNCAUTHENTICATION=1 VALUE_OF_USEVNCAUTHENTICATION=0'
@@ -136,6 +137,34 @@ cat ~/.ssh/id_rsa.pub | ssh $user_host "umask 077; test -d .ssh || mkdir .ssh ; 
 
 #BEGIN
 if (-not(Test-Path $ENV:userprofile\ps_profile.config)) { 
+    $empty_config='
+$Data = @{
+ ad1 = @{
+       host  = "ad1.com"
+       user     = "name.operator"
+
+ }
+ ad0 = @{
+       host  = "ad0.com"
+       user     = "admin.name"
+       g_sssd_path     = "OU=sssd,OU=groups,DC=ad0,DC=com"
+       g_sudo_path     = "OU=sudo,OU=groups,DC=ado,DC=com"
+
+
+ } 
+jira = @{
+       host  = "jira.com"
+       user     = "admin.name"
+       password     = ""
+       ssh_username_host     = "admin.name@host"
+       path_to_script = "/home/ldusers/dmitriy.kopaygora/admin.name/jira.sh"
+
+
+ }
+
+ }'
+ $empty_config | Out-File $ENV:userprofile\ps_profile.config
+}
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
 clear
