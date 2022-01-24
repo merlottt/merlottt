@@ -45,8 +45,8 @@ function fuip_ad1($username) {
         $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
     }
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
-    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad1.user", $secpasswd)
-    Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title -Server "$config.ad1.host" -Credential $ad1creds
+    $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
+    Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title -Server $config.ad1.host -Credential $ad1creds
 } 
 
 function rup_ad1($username) {
@@ -57,10 +57,10 @@ function rup_ad1($username) {
         $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
     }
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
-    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad1.user", $secpasswd)
+    $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
     New-RandomPassword
     $NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
-    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Server "$config.ad1.host" -Credential $ad1creds
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Server $config.ad1.host -Credential $ad1creds
 } 
 
 function umsGUID($username) {
@@ -85,8 +85,8 @@ Function sync_ad0_ad1_userinfo($username) {
         $env:ad1pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
     }
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
-    $ad1creds = New-Object System.Management.Automation.PSCredential ("$config.ad0.user", $secpasswd)
-    set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title $jobtitle_cur_user -Description $jobtitle_cur_user -Server "$config.ad1.host" -Credential $ad1creds;
+    $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
+    set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title $jobtitle_cur_user -Description $jobtitle_cur_user -Server $config.ad1.host -Credential $ad1creds;
     Write-Host set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title `"$jobtitle_cur_user`" -Description `"$jobtitle_cur_user`"
 } 
 
