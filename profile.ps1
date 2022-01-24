@@ -29,7 +29,9 @@ Function New-RandomPassword{
 }
 function removeJpegPhotouserAD($userlogin) { set-aduser $userlogin -clear jpegPhoto }
 
-function fuip_ad0($username) {Get-aduser -filter "Name -like '*$username*'" -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title
+function fuip_ad0($username) {
+Get-aduser -filter "Name -like '*$username*'" -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title
+(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf).MemberOf
 } 
 
 function rup_ad0($username) {
@@ -47,6 +49,7 @@ function fuip_ad1($username) {
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
     $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
     Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title -Server $config.ad1.host -Credential $ad1creds
+    (Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
 } 
 
 function rup_ad1($username) {
@@ -132,6 +135,7 @@ cat ~/.ssh/id_rsa.pub | ssh $user_host "umask 077; test -d .ssh || mkdir .ssh ; 
 }
 
 #BEGIN
+if (-not(Test-Path $ENV:userprofile\ps_profile.config)) { 
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
 clear
