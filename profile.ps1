@@ -157,7 +157,7 @@ jira = @{
        user     = "admin.name"
        password     = ""
        ssh_username_host     = "admin.name@host"
-       path_to_script = "/home/ldusers/dmitriy.kopaygora/admin.name/jira.sh"
+       path_to_script = "/home/ldusers/admin.name/jira.sh"
 
 
  }
