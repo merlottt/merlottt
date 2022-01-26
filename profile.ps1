@@ -11,6 +11,9 @@ function admin{
 function grep {
   $input | out-string -stream | select-string $args
 }
+function add_sssdsudoGroups($hostname) {
+$hostname |%{New-ADGroup SSSD-$_ -path "$config.ad1.g_sssd_path" -GroupCategory Security -GroupScope Global;New-ADGroup SUDO-$_ -path "$config.ad1.g_sudo_path" -GroupCategory Security -GroupScope Global}
+}
 Function New-RandomPassword{
     Param(
         [ValidateRange(8, 32)]
