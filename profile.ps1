@@ -51,7 +51,7 @@ function fuip_ad1($username) {
     }
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
     $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
-    Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title -Server $config.ad1.host -Credential $ad1creds
+    Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title,mail -Server $config.ad1.host -Credential $ad1creds
     (Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
 } 
 
@@ -131,6 +131,7 @@ function initEnv {
     Invoke-WebRequest -Uri $url -OutFile $outpath
     $args = @("/S")
     Start-Process -Filepath "$env:TEMP/npp.8.1.5.Installer.exe" -ArgumentList $args 
+    Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability –Online
 }
 
 function ssh-copy-Key($user_host) {
