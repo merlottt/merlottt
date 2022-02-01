@@ -290,7 +290,17 @@ Param
 }
 
 
-
+Function Connect-EXOnline{
+ 
+$credentials = Get-Credential -Credential $config.o365.user
+Write-Output "Getting the Exchange Online cmdlets"
+ 
+$Session = New-PSSession -ConnectionUri https://outlook.office365.com/powershell-liveid/ `
+-ConfigurationName Microsoft.Exchange -Credential $credentials `
+-Authentication Basic -AllowRedirection
+Import-PSSession $Session
+ 
+}
 
 
 
