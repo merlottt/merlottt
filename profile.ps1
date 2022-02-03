@@ -301,8 +301,13 @@ $Session = New-PSSession -ConnectionUri https://outlook.office365.com/powershell
 Import-PSSession $Session
  
 }
-
-
+function RemoteFirewallRules-Enable{
+    Get-NetFirewallRule -DisplayName "Remote Scheduled*" | Set-NetFirewallRule -Enabled True
+    Get-NetFirewallRule -DisplayName "Remote Assistance*" | Set-NetFirewallRule -Enabled True
+    Get-NetFirewallRule -DisplayName "Remote Event Log Management*" | Set-NetFirewallRule -Enabled True
+    Get-NetFirewallRule -DisplayName "Remote Volume Management*" | Set-NetFirewallRule -Enabled True
+    Get-NetFirewallRule -DisplayName "Remote Event Monitor*" | Set-NetFirewallRule -Enabled True
+}
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
