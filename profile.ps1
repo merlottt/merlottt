@@ -132,6 +132,9 @@ function initEnv {
     $args = @("/S")
     Start-Process -Filepath "$env:TEMP/npp.8.1.5.Installer.exe" -ArgumentList $args 
     Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability –Online
+    Get-WindowsCapability -Name RSAT* -Online | Select-Object -Property DisplayName, State
+    Add-WindowsCapability –online –Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+    Install-Module MSOnline
 }
 
 function ssh-copy-Key($user_host) {
