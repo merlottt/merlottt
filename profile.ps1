@@ -319,7 +319,11 @@ $secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
 Write-Output $ad1creds
 }
-
+function fuipALL ($username) {
+$creds=initcredential
+Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $creds
+(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $creds).MemberOf 
+}
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
