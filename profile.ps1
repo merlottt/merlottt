@@ -312,6 +312,25 @@ function RemoteFirewallRules-Enable{
     Get-NetFirewallRule -DisplayName "Remote Event Monitor*" | Set-NetFirewallRule -Enabled True
 }
 
+function Get-ADAudit_Groups($dc) {
+$creds=initcredential
+Get-WinEvent -FilterHashtable @{ Logname='Security'; ID='4728,4729'} -ComputerName $dc -Credential $creds
+}
+function initcredential {
+if ($cred -eq $null){ 
+    $cred=@()
+    Write-Host -foregroundcolor Green ...init creds from env...
+    if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password) }
+    if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password) }
+}
+foreach($key in $cred) { Write-Host -foregroundcolor Green ...Cred $key[0] }
+$selectcred = Read-Host "Select credentials:"
+$secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
+$ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
+Write-Output $ad1creds
+}
+
+
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
 clear
@@ -323,3 +342,4 @@ Write-Host -foregroundcolor Green -BackgroundColor DarkGray Last modify config f
 if (-not(Test-Path $ENV:userprofile\env\)) {    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\ }
 else {    git -C $ENV:userprofile\env\ pull }
 if (Test-Path $ENV:userprofile\env\profile.ps1) { Copy-Item $ENV:userprofile\env\profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force }
+
