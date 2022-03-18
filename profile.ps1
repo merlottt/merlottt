@@ -313,7 +313,7 @@ if ($cred -eq $null){
     if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password) }
     if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password) }
 }
-foreach($key in $cred) { Write-Host -foregroundcolor Green ...Cred $key[0] }
+foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
 $selectcred = Read-Host "Select credentials:"
 $secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
