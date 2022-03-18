@@ -293,17 +293,7 @@ Param
 }
 
 
-Function Connect-EXOnline{
- 
-$credentials = Get-Credential -Credential $config.o365.user
-Write-Output "Getting the Exchange Online cmdlets"
- 
-$Session = New-PSSession -ConnectionUri https://outlook.office365.com/powershell-liveid/ `
--ConfigurationName Microsoft.Exchange -Credential $credentials `
--Authentication Basic -AllowRedirection
-Import-PSSession $Session
- 
-}
+
 function RemoteFirewallRules-Enable{
     Get-NetFirewallRule -DisplayName "Remote Scheduled*" | Set-NetFirewallRule -Enabled True
     Get-NetFirewallRule -DisplayName "Remote Assistance*" | Set-NetFirewallRule -Enabled True
