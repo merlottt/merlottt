@@ -315,7 +315,8 @@ if ($cred -eq $null){
 }
 foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
 $selectcred = Read-Host "Select credentials:"
-$secpasswd = ConvertTo-SecureString $cred[$selectcred-1][1] -AsPlainText -Force
+$selectcred = $selectcred - 1
+$secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
 Write-Output $ad1creds
 }
