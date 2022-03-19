@@ -326,6 +326,7 @@ return $cred
 }
 
 function fuipALL ($username) {
+$creds=@()
 $creds =initcredential
 $secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
 $adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
