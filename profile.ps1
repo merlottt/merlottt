@@ -307,18 +307,17 @@ $creds=initcredential
 Get-WinEvent -FilterHashtable @{ Logname='Security'; ID='4728,4729'} -ComputerName $dc -Credential $creds
 }
 function initcredential {
-if ($cred -eq $null){ 
-    $cred=@()
-    Write-Host -foregroundcolor Green ...init creds from env...
-    if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password,$config.ad0.host) }
-    if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password,$config.ad1.host) }
-}
-foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
-Write-Host " $($i++) .Input user and password:"
-$selectcred = Read-Host "Select credentials:"
-$selectcred = $selectcred - 1
-
-return $cred[$selectcred]
+    if ($cred -eq $null){ 
+        $cred=@()
+        Write-Host -foregroundcolor Green ...init creds from env...
+        if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password,$config.ad0.host) }
+        if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password,$config.ad1.host) }
+    }
+    foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
+    Write-Host " $($i++) .Input user and password:"
+    $selectcred = Read-Host "Select credentials:"
+    $selectcred = $selectcred - 1
+    return $cred[$selectcred]
 }
 
 function fuipALL ($username) {
@@ -327,10 +326,17 @@ $creds =initcredential
 Write-Host Debug: $creds
 $secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
 $adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
-
-
 Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
 #(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
+}
+
+function userInArmy ($username) {
+    $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
+    $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
+    $NewPassword = New-RandomPassword
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
+    Disable-ADAccount -identity $username
+    get-aduser -identity $username -Properties:Enabled,passwordlastset -Credential $adcreds -Server $config.ad1.host | ft Samaccountname,Enabled,passwordlastset
 }
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
