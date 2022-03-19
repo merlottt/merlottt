@@ -337,6 +337,10 @@ function userInArmy ($username) {
     Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
     Disable-ADAccount -identity $username
     get-aduser -identity $username -Properties:Enabled,passwordlastset -Credential $adcreds -Server $config.ad1.host | ft Samaccountname,Enabled,passwordlastset
+    Write-Host Remove User from next Groups
+    $secpasswd = ConvertTo-SecureString $config.ad0.password -AsPlainText -Force
+    $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
+    $config.ad0.g_userInArmy| %{Remove-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
 }
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
