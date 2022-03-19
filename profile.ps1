@@ -314,7 +314,7 @@ if ($cred -eq $null){
     if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password,$config.ad1.host) }
 }
 foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
-Write-Host " $i++ .Input user and password:"
+Write-Host " $($i++) .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
 
