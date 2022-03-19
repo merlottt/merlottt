@@ -318,7 +318,7 @@ Write-Host " $i++ .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
 
-Write-Output $cred
+return $cred
 }
 
 function fuipALL ($username) {
