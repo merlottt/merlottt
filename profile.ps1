@@ -324,10 +324,11 @@ return $cred
 function fuipALL ($username) {
 $creds=@()
 $creds =initcredential
-$secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
-$adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
-
-Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
+#$secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
+#$adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
+Write-Host $creds
+Write-Host $creds[1]
+#Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
 #(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
 }
 
