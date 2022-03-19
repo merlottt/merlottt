@@ -336,7 +336,7 @@ function userInArmy ($username) {
     $NewPassword = ConvertTo-SecureString (New-RandomPassword) -AsPlainText -Force
     Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
     Disable-ADAccount -identity $username -Credential $adcreds -Server $config.ad1.host
-    get-aduser -identity $username -Properties:Enabled,passwordlastset -Credential $adcreds -Server $config.ad1.host | ft Samaccountname,Enabled,passwordlastset
+    get-aduser -identity $username -Properties:Enabled,passwordlastset,UserPrincipalName -Credential $adcreds -Server $config.ad1.host | ft UserPrincipalName,Samaccountname,Enabled,passwordlastset
     Write-Host Remove User from next Groups $config.ad0.g_userInArmy
 
     $secpasswd = ConvertTo-SecureString $config.ad0.password -AsPlainText -Force
