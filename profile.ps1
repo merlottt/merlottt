@@ -314,15 +314,11 @@ if ($cred -eq $null){
     if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password,$config.ad1.host) }
 }
 foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
-Write-Output " $i++ .Input user and password:"
+Write-Host " $i++ .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
-#$server=$cred[$selectcred][2]
-#$secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
-#$ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
-#Write-Output $ad1creds
-#Write-Output vars
-return $cred
+
+Write-Output $cred
 }
 
 function fuipALL ($username) {
