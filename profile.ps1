@@ -333,9 +333,9 @@ Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds
 function userInArmy ($username) {
     $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
-    $NewPassword = New-RandomPassword
+    $NewPassword = ConvertTo-SecureString (New-RandomPassword) -AsPlainText -Force
     Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
-    Disable-ADAccount -identity $username
+    Disable-ADAccount -identity $username -Credential $adcreds -Server $config.ad1.host
     get-aduser -identity $username -Properties:Enabled,passwordlastset -Credential $adcreds -Server $config.ad1.host | ft Samaccountname,Enabled,passwordlastset
     Write-Host Remove User from next Groups
     $secpasswd = ConvertTo-SecureString $config.ad0.password -AsPlainText -Force
