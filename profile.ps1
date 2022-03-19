@@ -310,20 +310,22 @@ function initcredential {
 if ($cred -eq $null){ 
     $cred=@()
     Write-Host -foregroundcolor Green ...init creds from env...
-    if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password) }
-    if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password) }
+    if ($config.ad0.user -ne $null -and $config.ad0.password -ne $null) { $cred += ,@( $config.ad0.user,$config.ad0.password,$config.ad0.host) }
+    if ($config.ad1.user -ne $null -and $config.ad1.password -ne $null) { $cred += ,@( $config.ad1.user,$config.ad1.password,$config.ad1.host) }
 }
 foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile.config $key[0] }
+Write-Output " $i++ .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
 $secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
-Write-Output $ad1creds
+return $ad1creds, $cred[$selectcred][2]
 }
+
 function fuipALL ($username) {
-$creds=initcredential
-Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $creds
-(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $creds).MemberOf 
+$creds, $server =initcredential
+Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $creds -Server $server
+(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $creds -Server $server).MemberOf 
 }
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
