@@ -318,7 +318,7 @@ Write-Host " $i++ .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
 
-return $cred
+return $cred[$selectcred]
 }
 
 function fuipALL ($username) {
@@ -327,7 +327,7 @@ $creds =initcredential
 #$secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
 #$adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
 Write-Host $creds
-Write-Host $creds[1]
+
 #Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
 #(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
 }
