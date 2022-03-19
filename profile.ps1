@@ -317,9 +317,11 @@ foreach($key in $cred) { $i++;Write-Host -foregroundcolor Green $i .from profile
 Write-Output " $i++ .Input user and password:"
 $selectcred = Read-Host "Select credentials:"
 $selectcred = $selectcred - 1
+$server=$cred[$selectcred][2]
 $secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
-return $ad1creds, $cred[$selectcred][2]
+Write-Output $server
+return $ad1creds, $server
 }
 
 function fuipALL ($username) {
