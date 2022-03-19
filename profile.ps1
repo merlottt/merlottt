@@ -322,13 +322,16 @@ $secpasswd = ConvertTo-SecureString $cred[$selectcred][1] -AsPlainText -Force
 $ad1creds = New-Object System.Management.Automation.PSCredential ($cred[$selectcred][0], $secpasswd)
 Write-Output $ad1creds
 Write-Output vars
-return $ad1creds, $server
+return $cred
 }
 
 function fuipALL ($username) {
-$creds, $server =initcredential
-Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $creds -Server $server
-(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $creds -Server $server).MemberOf 
+$creds =initcredential
+$secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
+$adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
+
+Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
+#(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
 }
 
 $path_to_config="$ENV:userprofile\ps_profile.config"
