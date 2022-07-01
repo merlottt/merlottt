@@ -41,6 +41,7 @@ function rup_ad0($username) {
     New-RandomPassword
     $NewPassword = (Read-Host -Prompt "Provide New Password" -AsSecureString)
     Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset
+    Unlock-ADAccount -identity $username
 } 
 function fuip_ad1($username) {
     while($env:ad1pass -eq $null)
@@ -343,6 +344,22 @@ function userInArmy ($username) {
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
     $config.ad0.g_userInArmy| %{Remove-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
     Write-Host User still in AD Groups:
+    (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
+}
+function userReturnFromArmy ($username) {
+    $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
+    $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
+    New-RandomPassword
+    $NewPassword = (Read-Host -Prompt "Provide New Password for user" -AsSecureString)
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
+    Enable-ADAccount -identity $username -Credential $adcreds -Server $config.ad1.host
+    get-aduser -identity $username -Properties:Enabled,passwordlastset,UserPrincipalName -Credential $adcreds -Server $config.ad1.host | ft UserPrincipalName,Samaccountname,Enabled,passwordlastset
+    Write-Host Remove User from next Groups $config.ad0.g_userInArmy
+
+    $secpasswd = ConvertTo-SecureString $config.ad0.password -AsPlainText -Force
+    $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
+    $config.ad0.g_userInArmy| %{add-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
+    Write-Host User now in AD Groups:
     (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
 
