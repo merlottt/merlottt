@@ -8,6 +8,11 @@ function admin{
     if ($args.Count -gt 0)    {  $argList = "& '" + $args + "'";       Start-Process "$psHome\powershell.exe" -Verb runAs -ArgumentList $argList    }
     else    {       Start-Process "$psHome\powershell.exe" -Verb runAs    }
 }
+function jiraNI($subject,$time, $cat) {
+Write-Output $subject
+ssh dmitriy.kopaygora@i-c8-jen-08 "export login=$config.jira.user;export password=$config.jira.password; $config.jira.path_to_script `\`" $subject `\`" $time $cat"
+} 
+
 function grep {
   $input | out-string -stream | select-string $args
 }
