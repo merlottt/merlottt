@@ -12,7 +12,7 @@ function admin{
 function jiraIssue($name,$time,$cat) {
 Write-Output $subject
 $date=Get-Date -Format "yyyy-M-ddTHH:mm:ss"
-python C:\Users\dmitriy.kopaygora\github\jira-autofill\subs\jira_AddIssueLogTimeAndClose.py -n $name -d $date -t $time -s "$config.jira.host" -p "$config.jira.project" -l "$config.jira.user" -w "$config.jira.password" -c $cat
+python C:\Users\dmitriy.kopaygora\github\jira-autofill\subs\jira_AddIssueLogTimeAndClose.py -n $name -d $date -t $time -s $config.jira.host -p $config.jira.project -l $config.jira.user -w $config.jira.password -c $cat
 }
 
 function grep {
