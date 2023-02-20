@@ -331,7 +331,7 @@ function initcredential {
 function fuipALL ($username) {
 $creds=@()
 $creds =initcredential
-Write-Host Debug: $creds
+#Write-Host Debug: $creds
 $secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
 $adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
 Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
