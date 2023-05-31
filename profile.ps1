@@ -370,6 +370,15 @@ function userReturnFromArmy ($username) {
     (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
 
+function terminationRCAD ($username) {
+    $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
+    $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
+    $NewPassword = ConvertTo-SecureString (New-RandomPassword) -AsPlainText -Force
+    Set-ADAccountPassword -identity $username -NewPassword $NewPassword -Reset -Credential $adcreds -Server $config.ad1.host
+    Disable-ADAccount -identity $username -Credential $adcreds -Server $config.ad1.host
+    get-aduser -identity $username -Properties:Enabled,passwordlastset,UserPrincipalName -Credential $adcreds -Server $config.ad1.host | ft UserPrincipalName,Samaccountname,Enabled,passwordlastset
+}
+
 $path_to_config="$ENV:userprofile\ps_profile.config"
 $config=Import-PowerShellDataFile $path_to_config
 clear
