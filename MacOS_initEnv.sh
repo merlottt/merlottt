@@ -8,6 +8,7 @@ brew install jandedobbeleer/oh-my-posh/oh-my-posh
 brew install iterm2
 brew tap homebrew/cask-fonts     
 brew install font-anonymice-nerd-font
+brew install stats
 echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
 
 brew leaast > brew.txt
