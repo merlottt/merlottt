@@ -13,8 +13,8 @@ brew install iterm2
 brew tap homebrew/cask-fonts     
 brew install font-anonymice-nerd-font
 brew install stats
+brew install --cask microsoft-remote-desktop
 echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
 defaults delete com.apple.dock persistent-apps; killall Dock
 
 brew leaast > brew.txt
-
