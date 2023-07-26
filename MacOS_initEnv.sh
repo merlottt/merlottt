@@ -14,6 +14,7 @@ brew tap homebrew/cask-fonts
 brew install font-anonymice-nerd-font
 brew install stats
 echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
+defaults delete com.apple.dock persistent-apps; killall Dock
 
 brew leaast > brew.txt
 
