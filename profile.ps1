@@ -41,7 +41,7 @@ function removeJpegPhotouserAD($userlogin) { set-aduser $userlogin -clear jpegPh
 
 function fuip_ad0($username) {
 Get-aduser -filter "Name -like '*$username*'" -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title
-(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf).MemberOf
+(Get-ADUser -filter "Name -like '*$username*'" â€“Properties MemberOf).MemberOf
 } 
 
 function rup_ad0($username) {
@@ -60,7 +60,7 @@ function fuip_ad1($username) {
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
     $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
     Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title,mail -Server $config.ad1.host -Credential $ad1creds
-    (Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
+    (Get-ADUser -filter "Name -like '*$username*'" â€“Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
 } 
 
 function rup_ad1($username) {
@@ -139,10 +139,11 @@ function initEnv {
     Invoke-WebRequest -Uri $url -OutFile $outpath
     $args = @("/S")
     Start-Process -Filepath "$env:TEMP/npp.8.1.5.Installer.exe" -ArgumentList $args 
-    Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability –Online
+    Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability â€“Online
     Get-WindowsCapability -Name RSAT* -Online | Select-Object -Property DisplayName, State
-    Add-WindowsCapability –online –Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+    Add-WindowsCapability â€“online â€“Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
     Install-Module MSOnline
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 }
 
 function ssh-copy-Key($user_host) {
@@ -335,7 +336,7 @@ $creds =initcredential
 $secpasswd = ConvertTo-SecureString $creds[1] -AsPlainText -Force
 $adcreds = New-Object System.Management.Automation.PSCredential ($creds[0], $secpasswd)
 Get-aduser -filter "Name -like '*$username*'" -properties:* -Credential $adcreds -Server $creds[2]
-#(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
+#(Get-ADUser -filter "Name -like '*$username*'" â€“Properties MemberOf -Credential $adcreds -Server $creds[2]).MemberOf 
 }
 
 function userInArmy ($username) {
@@ -351,7 +352,7 @@ function userInArmy ($username) {
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
     $config.ad0.g_userInArmy| %{Remove-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
     Write-Host User still in AD Groups:
-    (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
+    (Get-ADUser -Identity $username â€“Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
 function userReturnFromArmy ($username) {
     $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
@@ -367,7 +368,7 @@ function userReturnFromArmy ($username) {
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
     $config.ad0.g_userInArmy| %{add-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
     Write-Host User now in AD Groups:
-    (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
+    (Get-ADUser -Identity $username â€“Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
 
 function terminationRCAD ($username) {
