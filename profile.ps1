@@ -8,11 +8,6 @@ function admin{
     if ($args.Count -gt 0)    {  $argList = "& '" + $args + "'";       Start-Process "$psHome\powershell.exe" -Verb runAs -ArgumentList $argList    }
     else    {       Start-Process "$psHome\powershell.exe" -Verb runAs    }
 }
-<<<<<<< HEAD
-function grep {
-  $input | out-string -stream | select-string $args
-}
-=======
 
 function jiraIssue($name,$time,$cat) {
 Write-Output $subject
@@ -46,7 +41,7 @@ function removeJpegPhotouserAD($userlogin) { set-aduser $userlogin -clear jpegPh
 
 function fuip_ad0($username) {
 Get-aduser -filter "Name -like '*$username*'" -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title
-(Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf).MemberOf
+(Get-ADUser -filter "Name -like '*$username*'" Properties MemberOf).MemberOf
 } 
 
 function rup_ad0($username) {
@@ -65,7 +60,7 @@ function fuip_ad1($username) {
     $secpasswd = ConvertTo-SecureString $env:ad1pass -AsPlainText -Force
     $ad1creds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
     Get-ADUser -filter "Name -like '*$username*'"  -properties:Created,Enabled,LockedOut,PasswordExpired,PasswordLastSet,PasswordNeverExpires,Manager,Title,mail -Server $config.ad1.host -Credential $ad1creds
-    (Get-ADUser -filter "Name -like '*$username*'" –Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
+    (Get-ADUser -filter "Name -like '*$username*'" Properties MemberOf -Server $config.ad1.host -Credential $ad1creds).MemberOf
 } 
 
 function rup_ad1($username) {
@@ -109,7 +104,6 @@ Function sync_ad0_ad1_userinfo($username) {
     Write-Host set-ADUser $cur_user.samaccountname -manager $manager_cur_user -Title `"$jobtitle_cur_user`" -Description `"$jobtitle_cur_user`"
 } 
 
->>>>>>> refs/remotes/origin/master
 Set-Alias -Name su -Value admin
 Set-Alias -Name sudo -Value admin
 Set-Alias -Name vnc -Value "C:\Program Files\TightVNC\tvnviewer.exe"
@@ -122,7 +116,10 @@ function init_profile {
 }
 
 function initEnv {
-#example @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+<#
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+#>
     # Install Chocolatey if it's not already available
     if (!(Get-Command choco.exe -ErrorAction SilentlyContinue)) {
         Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))}
@@ -145,9 +142,9 @@ function initEnv {
     Invoke-WebRequest -Uri $url -OutFile $outpath
     $args = @("/S")
     Start-Process -Filepath "$env:TEMP/npp.8.1.5.Installer.exe" -ArgumentList $args 
-    Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability –Online
+    Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability Online
     Get-WindowsCapability -Name RSAT* -Online | Select-Object -Property DisplayName, State
-    Add-WindowsCapability –online –Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+    Add-WindowsCapability online Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
     Install-Module MSOnline
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 }
@@ -187,126 +184,7 @@ jira = @{
  }'
  $empty_config | Out-File $ENV:userprofile\ps_profile.config
 }
-
-function Get-ADGroupTreeViewMemberOf {
-#requires -version 4
-<#
-.SYNOPSIS
-    Show UpStream tree view hierarchy of memberof groups recursively of a Active Directory user and Group.
-.DESCRIPTION
-    The Show-ADGroupTreeViewMemberOf list all nested group list of a AD user. It requires only valid parameter AD username, 
-.PARAMETER UserName
-    Prompts you valid active directory User name. You can use first character as an alias, If information is not provided it provides 'Administrator' user information. 
-.PARAMETER GroupName
-    Prompts you valid active directory Group name. You can use first character as an alias, If information is not provided it provides 'Domain Admins' group[ information.
-.INPUTS
-    Microsoft.ActiveDirectory.Management.ADUser
-.OUTPUTS
-    Microsoft.ActiveDirectory.Management.ADGroup
-.NOTES
-    Version:        1.0
-    Author:         Kunal Udapi
-    Creation Date:  10 September 2017
-    Purpose/Change: Get the exact nested group info of user
-    Useful URLs: http://vcloud-lab.com
-.EXAMPLE
-    PS C:\>.\Get-ADGroupTreeViewMemberOf -UserName Administrator
-
-    This list all the upstream memberof group of an user.
-.EXAMPLE
-    PS C:\>.\Get-ADGroupTreeViewMemberOf -GroupName DomainAdmins
-
-    This list all the upstream memberof group of a Group.
-#>
-
-[CmdletBinding(SupportsShouldProcess=$True,
-    ConfirmImpact='Medium',
-    HelpURI='http://vcloud-lab.com',
-    DefaultParameterSetName='User')]
-Param
-(
-    [parameter(ParameterSetName = 'User',Position=0, ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, HelpMessage='Type valid AD username')]
-    [alias('User')]
-    [String]$UserName = 'Administrator',
-    [parameter(ParameterSetName = 'Group',Position=0, ValueFromPipelineByPropertyName=$true, ValueFromPipeline=$true, HelpMessage='Type valid AD Group')]
-    [alias('Group')]
-    [String]$GroupName = 'Domain Admins',
-    [parameter(ParameterSetName = 'Group', DontShow=$True)]
-    [parameter(ParameterSetName = 'User', DontShow=$True)]
-    [alias('U')]
-    $UpperValue = [System.Int32]::MaxValue,
-    [parameter(ParameterSetName = 'Group', DontShow=$True)]
-    [parameter(ParameterSetName = 'User', DontShow=$True)]
-    [alias('L')]
-    $LowerValue = 2
-)
-    begin {
-        if (!(Get-Module Activedirectory)) {
-            try {
-                Import-Module ActiveDirectory -ErrorAction Stop 
-            }
-            catch {
-                Write-Host -Object "ActiveDirectory Module didn't find, Please install it and try again" -BackgroundColor DarkRed
-                Break
-            }
-        }
-        switch ($PsCmdlet.ParameterSetName) {
-            'Group' {
-                try {
-                    $Group =  Get-ADGroup $GroupName -Properties Memberof -ErrorAction Stop 
-                    $MemberOf = $Group | Select-Object -ExpandProperty Memberof 
-                    $rootname = $Group.Name
-                }
-                catch {
-                    Write-Host -Object "`'$GroupName`' groupname doesn't exist in Active Directory, Please try again." -BackgroundColor DarkRed
-                    $result = 'Break'
-                    Break
-                }
-                break            
-            }
-            'User' {
-                try {
-                    $User = Get-ADUser $UserName -Properties Memberof -ErrorAction Stop
-                    $MemberOf = $User | Select-Object -ExpandProperty Memberof -ErrorAction Stop
-                    $rootname = $User.Name
-                    
-                }
-                catch {
-                    Write-Host -Object "`'$($User.Name)`' username doesn't exist in Active Directory, Please try again." -BackgroundColor DarkRed
-                    $result = 'Break'
-                    Break
-                }
-                Break
-            }
-        }
-    }
-    Process {
-        $Minus = $LowerValue - 2
-        $Spaces = " " * $Minus
-        $Lines = "__"
-        "{0}{1}{2}{3}" -f $Spaces, '|', $Lines, $rootname        
-        $LowerValue++
-        $LowerValue++
-        if ($LowerValue -le $UpperValue) {
-            foreach ($member in $MemberOf) {
-                $UpperGroup = Get-ADGroup $member -Properties Memberof
-                $LowerGroup = $UpperGroup | Get-ADGroupMember
-                $LoopCheck = $UpperGroup.MemberOf | ForEach-Object {$lowerGroup.distinguishedName -contains $_}
-            
-                if ($LoopCheck -Contains $True) {
-                    $rootname = $UpperGroup.Name
-                    Write-Host "Loop found on $($UpperGroup.Name), Skipping..." -BackgroundColor DarkRed
-                    Continue
-                }
-                #"xxx $($LowerGroup.name)"
-                #$Member
-                #"--- $($UpperGroup.Name) `n"
-                Get-ADGroupTreeViewMemberOf -GroupName $member -LowerValue $LowerValue -UpperValue $UpperValue
-            } #foreach ($member in $MemberOf) {
-        }
-    } #Process
-}
-
+ 
 
 
 function RemoteFirewallRules-Enable{
@@ -317,10 +195,6 @@ function RemoteFirewallRules-Enable{
     Get-NetFirewallRule -DisplayName "Remote Event Monitor*" | Set-NetFirewallRule -Enabled True
 }
 
-function Get-ADAudit_Groups($dc) {
-$creds=initcredential
-Get-WinEvent -FilterHashtable @{ Logname='Security'; ID='4728,4729'} -ComputerName $dc -Credential $creds
-}
 function initcredential {
     if ($cred -eq $null){ 
         $cred=@()
@@ -358,8 +232,9 @@ function userInArmy ($username) {
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
     $config.ad0.g_userInArmy| %{Remove-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
     Write-Host User still in AD Groups:
-    (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
+    (Get-ADUser -Identity $username Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
+
 function userReturnFromArmy ($username) {
     $secpasswd = ConvertTo-SecureString $config.ad1.password -AsPlainText -Force
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad1.user, $secpasswd)
@@ -374,7 +249,7 @@ function userReturnFromArmy ($username) {
     $adcreds = New-Object System.Management.Automation.PSCredential ($config.ad0.user, $secpasswd)
     $config.ad0.g_userInArmy| %{add-ADGroupMember -Identity $_ -Members $username -Confirm:$false -Credential $adcreds -Server $config.ad0.host}
     Write-Host User now in AD Groups:
-    (Get-ADUser -Identity $username –Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
+    (Get-ADUser -Identity $username Properties MemberOf -Credential $adcreds -Server $config.ad0.host).MemberOf 
 }
 
 function terminationRCAD ($username) {
