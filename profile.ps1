@@ -8,7 +8,9 @@ function admin{
     if ($args.Count -gt 0)    {  $argList = "& '" + $args + "'";       Start-Process "$psHome\powershell.exe" -Verb runAs -ArgumentList $argList    }
     else    {       Start-Process "$psHome\powershell.exe" -Verb runAs    }
 }
-
+function grep {
+  $input | out-string -stream | select-string $args
+}
 Set-Alias -Name su -Value admin
 Set-Alias -Name sudo -Value admin
 Set-Alias -Name vnc -Value "C:\Program Files\TightVNC\tvnviewer.exe"
