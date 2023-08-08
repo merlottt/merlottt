@@ -268,7 +268,7 @@ Write-Host -foregroundcolor Red Be careful, the script is in the public git.
 Write-Host -foregroundcolor Green Store confidential information in a config file 
 Write-Host -foregroundcolor Green Path to current config file:  $path_to_config
 Write-Host -foregroundcolor Green -BackgroundColor DarkGray Last modify config file: (Get-Item $path_to_config).LastWriteTime
-
+Import-Module $ENV:userprofile\git\scripts\usermigr2rc.ps1
 if (-not(Test-Path $ENV:userprofile\env\)) {    git clone https://github.com/merlottt/merlottt.git $ENV:userprofile\env\ }
 else {    git -C $ENV:userprofile\env\ pull }
 if (Test-Path $ENV:userprofile\env\profile.ps1) { Copy-Item $ENV:userprofile\env\profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force }
