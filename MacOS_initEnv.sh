@@ -15,6 +15,10 @@ brew install font-anonymice-nerd-font
 brew install stats
 brew install --cask microsoft-remote-desktop
 echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
-defaults delete com.apple.dock persistent-apps; killall Dock
+brew tap lotyp/homebrew-formulae
+brew install lotyp/formulae/dockutil
+dockutil --remove all
+
+#defaults delete com.apple.dock persistent-apps; killall Dock
 
 brew leaast > brew.txt
