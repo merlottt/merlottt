@@ -18,6 +18,7 @@ echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
 brew tap lotyp/homebrew-formulae
 brew install lotyp/formulae/dockutil
 dockutil --remove all
+brew install parallels-client
 
 #defaults delete com.apple.dock persistent-apps; killall Dock
 
