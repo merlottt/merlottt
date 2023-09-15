@@ -147,6 +147,8 @@ function initEnv {
     Add-WindowsCapability online Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
     Install-Module MSOnline
     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+    choco install openssh --params "/SSHServerFeature"
+    New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
 }
 
 function ssh-copy-Key($user_host) {
