@@ -19,7 +19,7 @@ echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
 brew tap lotyp/homebrew-formulae
 brew install lotyp/formulae/dockutil
 dockutil --remove all
-brew install parallels-elient
+brew install --cask parallels-client
 brew install chromium
 xattr -cr /Applications/Chromium.app
 #defaults delete com.apple.dock persistent-apps; killall Dock
