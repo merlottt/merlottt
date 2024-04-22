@@ -36,3 +36,6 @@ brew install remote-desktop-manager-free
 #xattr -cr /Applications/Chromium.app
 #defaults delete com.apple.dock persistent-apps; killall Dock
 #brew leaast > brew.txt
+
+#unload music app
+launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist
