@@ -26,6 +26,7 @@ brew tap homebrew/cask-versions && brew install --cask google-chrome-canary
 #brew install font-anonymice-nerd-font
 #echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
 #brew tap lotyp/homebrew-formulae
+brew install --cask maccy
 
 brew install lotyp/formulae/dockutil
 dockutil --remove all
