@@ -21,7 +21,35 @@ brew install google-chrome-beta
 brew tap homebrew/cask-versions && brew install --cask google-chrome-canary
 
 #brew install jandedobbeleer/oh-my-posh/oh-my-posh
-#brew install iterm2
+brew install iterm2
+brew install tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+cat << 'EOF' > ~/.tmux.conf
+# List of plugins
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+
+# Enable automatic restore when tmux is started
+set -g @continuum-restore 'on'
+
+# Optional: Restore Vim/Neovim sessions
+# set -g @resurrect-strategy-vim 'session'
+# set -g @resurrect-strategy-nvim 'session'
+
+# Optional: Restore specific programs (add to this list as needed)
+# set -g @resurrect-processes 'ssh psql mysql sqlite3'
+
+# Set the prefix key
+set -g prefix C-a
+unbind C-b # Unbind default Ctrl-b
+bind C-a send-prefix # Bind new prefix
+
+set -g mouse on
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
+EOF
+	
 #brew tap homebrew/cask-fonts     
 #brew install font-anonymice-nerd-font
 #echo eval "$(oh-my-posh init zsh)" >> ~/.zshrc
@@ -31,11 +59,6 @@ brew install --cask maccy
 brew install lotyp/formulae/dockutil
 dockutil --remove all
 brew install remote-desktop-manager-free  
-#brew install --cask microsoft-remote-desktop
-#brew install --cask parallels-client
-#brew install chromium
-#xattr -cr /Applications/Chromium.app
-#defaults delete com.apple.dock persistent-apps; killall Dock
 #brew leaast > brew.txt
 
 #unload music app
